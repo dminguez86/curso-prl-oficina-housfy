@@ -441,7 +441,7 @@ q:[["El teléfono de emergencias es:",["112","010","091 únicamente","No existe"
 
 const MODS=[M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12];
 
-window.__COURSE_BUILD__="20261102172054";
+window.__COURSE_BUILD__="20261102173617";
 (function(){try{const B=window.__COURSE_BUILD__,k="prl_ofi_build";const o=localStorage.getItem(k);localStorage.setItem(k,B);if(o&&o!==B&&!sessionStorage.getItem("rl_"+B)){sessionStorage.setItem("rl_"+B,"1");location.reload()}}catch(e){}})();
 setInterval(()=>{fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{const m=t.match(/__COURSE_BUILD__="([^"]+)"/);if(m&&m[1]!==window.__COURSE_BUILD__&&!sessionStorage.getItem("rl_"+m[1])){try{tick(2)}catch(e){}sessionStorage.setItem("rl_"+m[1],"1");localStorage.setItem("prl_ofi_build",m[1]);setTimeout(()=>location.reload(),400)}}).catch(()=>{})},600000);
 const KEY="curso-prl-ofi-v1";
@@ -449,11 +449,12 @@ const SK="curso-prl-ofi-session",TK="curso-prl-ofi-theme",RK_="curso-prl-ofi-rec
 const API=location.hostname==="curso-prl-oficina-housfy.onrender.com"?"https://curso-prl-taf-api.onrender.com":(location.protocol==="file:"?"https://curso-prl-taf-api.onrender.com":"");
 const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let REV=false;const REVH="a9f38bde2027987d98f82f09c9675126ee5efeae08b9ff1762ba75e3e0d58e28";
 let U=null,TOKEN=null,st={done:{},scores:{}},syncT=null,syncing=false,ver=0,again=false;
 async function api(p,o={}){const r=await fetch(API+p,{...o,headers:{"Content-Type":"application/json",...(TOKEN?{Authorization:"Bearer "+TOKEN}:{})}});let j={};try{j=await r.json()}catch(e){}return{ok:r.ok,status:r.status,j}}
 function syncState(s){const el=document.getElementById("sync");if(!el)return;el.dataset.s=s;el.textContent={ok:"☁️ Sincronizado",wait:"⏳ Guardando…",off:"📴 Sin conexión · guardado en este dispositivo",err:"⚠️ Pendiente de sincronizar"}[s]||"";}
-const save=()=>{if(!U)return;acc();ver++;st.dirty=1;LS.set(KEY+":"+U.dni,st);clearTimeout(syncT);syncState("wait");syncT=setTimeout(sync,800)};
-async function sync(){if(!U||!TOKEN)return;if(syncing){again=true;return}if(!navigator.onLine){syncState("off");return}syncing=true;const v0=ver;try{const{dirty,...p}=st,lo={timeByKey:st.timeByKey,attempts:st.attempts},r=await api("/api/progress",{method:"PUT",body:JSON.stringify({progress:p})});
+const save=()=>{if(!U||REV)return;acc();ver++;st.dirty=1;LS.set(KEY+":"+U.dni,st);clearTimeout(syncT);syncState("wait");syncT=setTimeout(sync,800)};
+async function sync(){if(!U||!TOKEN||REV)return;if(syncing){again=true;return}if(!navigator.onLine){syncState("off");return}syncing=true;const v0=ver;try{const{dirty,...p}=st,lo={timeByKey:st.timeByKey,attempts:st.attempts},r=await api("/api/progress",{method:"PUT",body:JSON.stringify({progress:p})});
 if(r.status===401){syncing=false;expired();return}if(!r.ok&&r.status!==409)throw 0;if(ver===v0||r.status===409){const last=st.last,ts=st.timeSec|0;st={...r.j.progress,last};st.timeSec=Math.max(st.timeSec|0,ts);mx(st,lo);LS.set(KEY+":"+U.dni,st);syncState("ok");refreshNav()}else again=true}catch(e){syncState(navigator.onLine?"err":"off")}syncing=false;if(again){again=false;sync()}}
 function mx(a,b){for(const f of["timeByKey","attempts"]){a[f]=Object.assign({},a[f]||{});for(const k in(b&&b[f])||{})a[f][k]=Math.max(a[f][k]|0,b[f][k]|0)}return a}
 const att=k=>{st.attempts=st.attempts||{};st.attempts[k]=(st.attempts[k]|0)+1};
@@ -480,7 +481,7 @@ const keys=m=>MODS[m].L.map((_,i)=>m+"-"+i).concat(m+"-final");
 const modPct=m=>{const ks=keys(m);return Math.round(ks.filter(k=>st.done[k]).length/ks.length*100)};
 const allKeys=()=>MODS.flatMap((_,m)=>keys(m)).concat("exam");
 // Avance secuencial: cada hito exige tener aprobado el anterior
-function locked(k){const o=allKeys(),i=o.indexOf(k);return i>0&&!st.done[o[i-1]]}
+function locked(k){if(REV)return false;const o=allKeys(),i=o.indexOf(k);return i>0&&!st.done[o[i-1]]}
 function lockMsg(k){if(k==="exam")return"El examen final se abre cuando hayas aprobado todas las lecciones y los tests de los "+MODS.length+" bloques de lecciones.";const[m,p]=k.split("-");
 if(p==="final")return"El test final de la lección "+(+m)+" se abre cuando hayas aprobado los tests de todas sus lecciones.";
 if(+p>0)return"Para abrir esta lección debes aprobar antes el test de la lección "+(+m)+"."+(+p)+".";return"La lección "+(+m)+" se abre cuando hayas aprobado el test final de la lección "+(+m-1)+"."}
@@ -604,9 +605,12 @@ function download(){const det=MODS.map((M,m)=>({leccion_n:m,titulo:M.t,porcentaj
 const r={curso:"PRL para Personal de oficinas – Grupo Housfy (art. 19 Ley 31/1995)",generado:new Date().toISOString(),usuario:{...U},duracion_horas:+(TOT()/60).toFixed(2),tiempo_conexion_seg:st.timeSec|0,tiempo_por_hito_seg:st.timeByKey||{},intentos:st.attempts||{},progreso_total:Math.round(allKeys().filter(k=>st.done[k]).length/allKeys().length*100),examen_final:st.exam||null,modulos:det};
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:"application/json"}));a.download="registro-prl-ofi-"+U.dni+".json";document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 $("#ubtn").onclick=()=>go({p:"account"});
+(async()=>{let rv=null;try{rv=new URLSearchParams(location.search).get("revision")}catch(e){}
+if(rv&&crypto&&crypto.subtle){try{const d=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(rv));REV=[...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,"0")).join("")===REVH}catch(e){}}
+if(REV){U={name:"Modo revisión",dni:"REVISION",company:"Previjob",email:""};TOKEN=null;st=emptySt();const bn=document.createElement("div");bn.id="revbanner";bn.setAttribute("role","status");bn.style.cssText="position:sticky;top:0;z-index:9999;background:#e67e22;color:#fff;font-weight:800;text-align:center;padding:7px 10px;font-family:Montserrat,sans-serif;letter-spacing:.04em";bn.textContent="👁️ MODO REVISIÓN · navegación libre · no se guarda ningún progreso ni se registra ningún alumno";document.body.prepend(bn);setHeader();go({p:"home"});return}
 {const S=LS.get(SK,null);if(S&&S.token&&S.user){U=S.user;TOKEN=S.token;st=Object.assign(emptySt(),LS.get(KEY+":"+U.dni,null)||{});tLast=document.visibilityState==="visible"?Date.now():null;setHeader();go(parse(st.last||"home"));
 api("/api/me").then(r=>{if(r.status===401)return expired();if(!r.ok)return;api("/api/session",{method:"POST"}).catch(()=>{});U=r.j.user;LS.set(SK,{token:TOKEN,user:U});setHeader();if(st.dirty)sync();else{const l=st.last,ts=st.timeSec|0,lo={timeByKey:st.timeByKey,attempts:st.attempts};st=Object.assign(emptySt(),r.j.progress);st.last=l||st.last;st.timeSec=Math.max(st.timeSec|0,ts);mx(st,lo);LS.set(KEY+":"+U.dni,st);refreshNav();syncState("ok")}}).catch(()=>syncState("off"))}
-else{setHeader();auth()}}
+else{setHeader();auth()}}})();
 
 </script>
 </body>
