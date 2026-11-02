@@ -2,7 +2,7 @@
 setInterval(()=>{fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{const m=t.match(/__COURSE_BUILD__="([^"]+)"/);if(m&&m[1]!==window.__COURSE_BUILD__&&!sessionStorage.getItem("rl_"+m[1])){try{tick(2)}catch(e){}sessionStorage.setItem("rl_"+m[1],"1");localStorage.setItem("prl_ofi_build",m[1]);setTimeout(()=>location.reload(),400)}}).catch(()=>{})},600000);
 const KEY="curso-prl-ofi-v1";
 const SK="curso-prl-ofi-session",TK="curso-prl-ofi-theme",RK_="curso-prl-ofi-recent";
-const API=location.hostname==="curso-prl-oficina-housfy.onrender.com"?"https://curso-prl-ofi-api.onrender.com":(location.protocol==="file:"?"https://curso-prl-ofi-api.onrender.com":"");
+const API=location.hostname==="curso-prl-oficina-housfy.onrender.com"?"https://curso-prl-taf-api.onrender.com":(location.protocol==="file:"?"https://curso-prl-taf-api.onrender.com":"");
 const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let U=null,TOKEN=null,st={done:{},scores:{}},syncT=null,syncing=false,ver=0,again=false;
