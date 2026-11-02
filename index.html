@@ -53,7 +53,7 @@ html[data-theme=dark] .opt.ok,html[data-theme=dark] .opt.ko{color:#04121d}
 .fb{font-size:.9rem;min-height:1.2em;font-weight:600}.score{font-size:1.15rem;font-weight:800}
 .pn{display:flex;justify-content:space-between;gap:10px;margin-top:24px;flex-wrap:wrap}
 figure{margin:12px 0;text-align:center}figure img{max-width:100%;border-radius:12px;border:1px solid var(--bd);cursor:zoom-in;background:#fff}figcaption{font-size:.8rem;color:var(--mut)}
-.lb{position:fixed;inset:0;background:#000d;z-index:50;display:flex;align-items:center;justify-content:center;cursor:zoom-out;animation:fade .25s}.lb img{max-width:96vw;max-height:92vh;border-radius:8px;background:#fff}.lb button{position:fixed;top:12px;right:12px}
+.lb{position:fixed;inset:0;background:#000e;z-index:1000;overflow:auto;touch-action:pinch-zoom pan-x pan-y;animation:fade .2s}.lbw{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 10px 16px;box-sizing:border-box}.lb img{max-width:min(96vw,2000px);max-height:84vh;width:auto;height:auto;border-radius:8px;background:#fff;cursor:zoom-in;border:0}.lb.z .lbw{align-items:flex-start;justify-content:flex-start}.lb.z img{max-width:none;max-height:none;width:auto;cursor:zoom-out}.lbh{color:#dfe9f0;font-size:.82rem;margin:10px 0 0;text-align:center}.lbx{position:fixed;top:10px;right:10px;z-index:2;width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:#0b3a55;color:#fff;font-size:1.2rem;font-weight:800;cursor:pointer}.lbx:focus-visible,figure img:focus-visible{outline:3px solid #16B14C;outline-offset:3px}html.lbo{overflow:hidden}
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--mut);font-size:.88rem;margin:4px 0 8px}
 .hx{position:relative;overflow:hidden;border-radius:22px;color:#fff;padding:40px 34px;background:linear-gradient(135deg,var(--navy) 0%,#035f8c 55%,#0291CE 100%);box-shadow:0 20px 50px #0a1f3355;display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center}
 .hx::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,#009CD7 0 50%,#16B14C 50% 100%)}
@@ -120,7 +120,7 @@ ul,ol{padding-left:1.3em}li{margin:3px 0}
 @media(max-width:420px){#pct{display:none}.ub{max-width:110px;padding:6px 10px}.ah{padding:22px 16px}header h1 span{max-width:40vw}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{header,nav,.pn,.noprint,.alert{display:none!important}main{padding:0}body{background:#fff;color:#000}.wrap{display:block}details.bl{break-inside:avoid}}
-.fig{margin:.3rem 0 .9rem}.fig svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto;border-radius:14px;border:1px solid var(--bd)}.fig img{display:block;width:100%;height:auto;max-width:720px;margin:0 auto;border-radius:14px;border:1px solid var(--bd);background:#fff}.fig figcaption{font-size:.86rem;color:var(--mut);text-align:center;margin-top:.35rem}
+.fig{margin:.3rem 0 .9rem}.fig svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto;border-radius:14px;border:1px solid var(--bd)}.fig img{cursor:zoom-in;display:block;width:100%;height:auto;max-width:720px;margin:0 auto;border-radius:14px;border:1px solid var(--bd);background:#fff}.fig figcaption{font-size:.86rem;color:var(--mut);text-align:center;margin-top:.35rem}
 </style>
 </head>
 <body>
@@ -136,7 +136,7 @@ const NOTE=s=>`<div class="note">${s}</div>`, ALERT=s=>`<div class="alert">⚠�
 const CASO=(t,s,r)=>`<div class="caso"><b>🧩 Caso práctico: ${t}</b><p>${s}</p><details><summary><b>Ver resolución</b></summary><p>${r}</p></details></div>`;
 const FLOW=a=>`<div class="flow">${a.map(x=>`<span>${x}</span>`).join("<i>→</i>")}</div>`;
 const V=v=>`<span class="vb v-${v.toLowerCase()}">${v}</span>`;
-const FIGI=(src,alt,cap,w,h)=>`<figure class="fig"><img src="${src}" alt="${alt}" width="${w}" height="${h}" loading="lazy" decoding="async"><figcaption>${cap}</figcaption></figure>`;const FIG=(svg,cap)=>`<figure class="fig">${svg}<figcaption>${cap}</figcaption></figure>`;const RK=(c,n)=>`<div class="rk"><b>${n}</b></div>`;
+const FIGI=(src,alt,cap,w,h)=>`<figure class="fig"><img src="${src}" data-hd="${src.replace(/\.webp$/,"-hd.webp")}" alt="${alt}" width="${w}" height="${h}" loading="lazy" decoding="async" role="button" tabindex="0" title="Pulsa para ampliar"><figcaption>${cap}</figcaption></figure>`;const FIG=(svg,cap)=>`<figure class="fig">${svg}<figcaption>${cap}</figcaption></figure>`;const RK=(c,n)=>`<div class="rk"><b>${n}</b></div>`;
 const LEY=s=>`<div class="ley">⚖️ <b>Texto legal.</b> ${s}</div>`;
 const ER="Evaluación de riesgos del puesto «Personal de oficinas» de tu sociedad del Grupo Housfy";
 
@@ -442,7 +442,7 @@ q:[["El teléfono de emergencias es:",["112","010","091 únicamente","No existe"
 
 const MODS=[M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12];
 
-window.__COURSE_BUILD__="20261102200142";
+window.__COURSE_BUILD__="20261102201207";
 (function(){try{const B=window.__COURSE_BUILD__,k="prl_ofi_build";const o=localStorage.getItem(k);localStorage.setItem(k,B);if(o&&o!==B&&!sessionStorage.getItem("rl_"+B)){sessionStorage.setItem("rl_"+B,"1");location.reload()}}catch(e){}})();
 setInterval(()=>{fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{const m=t.match(/__COURSE_BUILD__="([^"]+)"/);if(m&&m[1]!==window.__COURSE_BUILD__&&!sessionStorage.getItem("rl_"+m[1])){try{tick(2)}catch(e){}sessionStorage.setItem("rl_"+m[1],"1");localStorage.setItem("prl_ofi_build",m[1]);setTimeout(()=>location.reload(),400)}}).catch(()=>{})},600000);
 const KEY="curso-prl-ofi-v1";
@@ -550,8 +550,19 @@ const qs=pool.slice(0,n).map(q=>{const o=shuffle(q[1].map((t,j)=>({t,c:j===q[2]}
 main.innerHTML=`<div><div class="hero"><span class="tag" style="background:#ffffff22;color:#fff;border-color:#ffffff55">Evaluación final del curso · 20 min</span><h2>🎓 Examen final</h2><p>${n} preguntas al azar de un banco de ${pool.length}, de todas las lecciones. Necesitas ${need} aciertos (70 %) para superar el curso (APTO). ${st.exam?"Mejor nota: "+st.exam.ok+"/"+st.exam.n:""}</p></div><div class="card">${quizHTML(qs,"ex")}</div><div class="pn"><button id="prev">◀ Portada</button><button class="btn" id="next">👤 Mi cuenta ▶</button></div></div>`;
 bindQuiz(qs,"ex",need,ok=>{att("exam");const pass=ok>=need,d=new Date().toISOString().slice(0,10);if(!st.exam||ok>st.exam.ok||(pass&&!st.exam.pass))st.exam={ok,n,pass:pass||(st.exam&&st.exam.pass)||false,date:pass?d:(st.exam&&st.exam.date)||d};if(pass)st.done.exam=1;save();renderNav({p:"exam"});progress()});
 $("#prev").onclick=()=>go({p:"home"});$("#next").onclick=()=>go({p:"account"});}
-function bindMedia(){main.querySelectorAll("img.zoom").forEach(im=>im.onclick=()=>{const b=document.createElement("div");b.className="lb";b.innerHTML=`<img src="${im.src}" alt="${im.alt}"><button aria-label="Cerrar">✕</button>`;b.onclick=()=>b.remove();document.body.append(b)});}
-addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".lb").forEach(b=>b.remove())});
+function bindMedia(){}
+let LBret=null;
+function lbClose(){const b=document.querySelector(".lb");if(!b)return;b.remove();document.documentElement.classList.remove("lbo");if(LBret&&LBret.focus)LBret.focus();LBret=null}
+function lbOpen(im){lbClose();LBret=im;const hd=im.dataset.hd||im.currentSrc||im.src;const b=document.createElement("div");b.className="lb";b.setAttribute("role","dialog");b.setAttribute("aria-modal","true");b.setAttribute("aria-label","Imagen ampliada: "+(im.alt||""));
+b.innerHTML=`<button type="button" class="lbx" aria-label="Cerrar imagen ampliada">✕</button><div class="lbw"><img alt=""><p class="lbh">Pellizca o pulsa la imagen para ampliar · Esc o ✕ para cerrar</p></div>`;
+const g=b.querySelector("img");g.alt=im.alt||"";g.src=im.currentSrc||im.src;if(hd!==g.src){const pre=new Image();pre.onload=()=>{g.src=hd};pre.src=hd}
+g.onclick=e=>{e.stopPropagation();b.classList.toggle("z")};
+b.onclick=e=>{if(e.target===b||e.target.classList.contains("lbw")||e.target.classList.contains("lbh"))lbClose()};
+b.querySelector(".lbx").onclick=e=>{e.stopPropagation();lbClose()};
+b.addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();b.querySelector(".lbx").focus()}});
+document.body.append(b);document.documentElement.classList.add("lbo");b.querySelector(".lbx").focus()}
+document.addEventListener("click",e=>{const im=e.target.closest&&e.target.closest("figure img, img.zoom");if(im&&!im.closest(".lb")){e.preventDefault();lbOpen(im)}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){lbClose();return}const im=e.target;if((e.key==="Enter"||e.key===" ")&&im.matches&&im.matches("figure img, img.zoom")&&!im.closest(".lb")){e.preventDefault();lbOpen(im)}});
 
 const LET="TRWAGMYFPDXBNJZSQVHLCKE";
 function normDni(s){return String(s||"").toUpperCase().replace(/[\s.-]/g,"")}

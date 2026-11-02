@@ -105,8 +105,19 @@ const qs=pool.slice(0,n).map(q=>{const o=shuffle(q[1].map((t,j)=>({t,c:j===q[2]}
 main.innerHTML=`<div><div class="hero"><span class="tag" style="background:#ffffff22;color:#fff;border-color:#ffffff55">Evaluación final del curso · 20 min</span><h2>🎓 Examen final</h2><p>${n} preguntas al azar de un banco de ${pool.length}, de todas las lecciones. Necesitas ${need} aciertos (70 %) para superar el curso (APTO). ${st.exam?"Mejor nota: "+st.exam.ok+"/"+st.exam.n:""}</p></div><div class="card">${quizHTML(qs,"ex")}</div><div class="pn"><button id="prev">◀ Portada</button><button class="btn" id="next">👤 Mi cuenta ▶</button></div></div>`;
 bindQuiz(qs,"ex",need,ok=>{att("exam");const pass=ok>=need,d=new Date().toISOString().slice(0,10);if(!st.exam||ok>st.exam.ok||(pass&&!st.exam.pass))st.exam={ok,n,pass:pass||(st.exam&&st.exam.pass)||false,date:pass?d:(st.exam&&st.exam.date)||d};if(pass)st.done.exam=1;save();renderNav({p:"exam"});progress()});
 $("#prev").onclick=()=>go({p:"home"});$("#next").onclick=()=>go({p:"account"});}
-function bindMedia(){main.querySelectorAll("img.zoom").forEach(im=>im.onclick=()=>{const b=document.createElement("div");b.className="lb";b.innerHTML=`<img src="${im.src}" alt="${im.alt}"><button aria-label="Cerrar">✕</button>`;b.onclick=()=>b.remove();document.body.append(b)});}
-addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".lb").forEach(b=>b.remove())});
+function bindMedia(){}
+let LBret=null;
+function lbClose(){const b=document.querySelector(".lb");if(!b)return;b.remove();document.documentElement.classList.remove("lbo");if(LBret&&LBret.focus)LBret.focus();LBret=null}
+function lbOpen(im){lbClose();LBret=im;const hd=im.dataset.hd||im.currentSrc||im.src;const b=document.createElement("div");b.className="lb";b.setAttribute("role","dialog");b.setAttribute("aria-modal","true");b.setAttribute("aria-label","Imagen ampliada: "+(im.alt||""));
+b.innerHTML=`<button type="button" class="lbx" aria-label="Cerrar imagen ampliada">✕</button><div class="lbw"><img alt=""><p class="lbh">Pellizca o pulsa la imagen para ampliar · Esc o ✕ para cerrar</p></div>`;
+const g=b.querySelector("img");g.alt=im.alt||"";g.src=im.currentSrc||im.src;if(hd!==g.src){const pre=new Image();pre.onload=()=>{g.src=hd};pre.src=hd}
+g.onclick=e=>{e.stopPropagation();b.classList.toggle("z")};
+b.onclick=e=>{if(e.target===b||e.target.classList.contains("lbw")||e.target.classList.contains("lbh"))lbClose()};
+b.querySelector(".lbx").onclick=e=>{e.stopPropagation();lbClose()};
+b.addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();b.querySelector(".lbx").focus()}});
+document.body.append(b);document.documentElement.classList.add("lbo");b.querySelector(".lbx").focus()}
+document.addEventListener("click",e=>{const im=e.target.closest&&e.target.closest("figure img, img.zoom");if(im&&!im.closest(".lb")){e.preventDefault();lbOpen(im)}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){lbClose();return}const im=e.target;if((e.key==="Enter"||e.key===" ")&&im.matches&&im.matches("figure img, img.zoom")&&!im.closest(".lb")){e.preventDefault();lbOpen(im)}});
 
 const LET="TRWAGMYFPDXBNJZSQVHLCKE";
 function normDni(s){return String(s||"").toUpperCase().replace(/[\s.-]/g,"")}
