@@ -451,7 +451,7 @@ q:[["El teléfono de emergencias es:",["112","010","091 únicamente","No existe"
 
 const MODS=[M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12];
 
-window.__COURSE_BUILD__="20261109070949";
+window.__COURSE_BUILD__="20261109072127";
 const EMPRESAS=["FINQUES FELIU, S.L.", "HOUSFY REAL ESTATE, S.L.", "HRE PROPERTY MGMT IBERIA, S.L.", "HRE GESTIO DE FINQUES, S.L.", "HIBO TECH SERVICES, S.L.", "UNIÓ CATALANA D'ADMINISTRADORS, S.L.", "FINQUES MARTINEZ, S.L.", "DESPATX OLIVARES, S.L.", "HOUSFY SERVICES, S.L.", "HRE PM GIRONA, S.L.", "SERRA EXPERIÈNCIA IMMOBILIÀRIA, S.L.U."];
 (function(){try{const B=window.__COURSE_BUILD__,k="prl_ofi_build";const o=localStorage.getItem(k);localStorage.setItem(k,B);if(o&&o!==B&&!sessionStorage.getItem("rl_"+B)){sessionStorage.setItem("rl_"+B,"1");location.reload()}}catch(e){}})();
 setInterval(()=>{fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{const m=t.match(/__COURSE_BUILD__="([^"]+)"/);if(m&&m[1]!==window.__COURSE_BUILD__&&!sessionStorage.getItem("rl_"+m[1])){try{tick(2)}catch(e){}sessionStorage.setItem("rl_"+m[1],"1");localStorage.setItem("prl_ofi_build",m[1]);setTimeout(()=>location.reload(),400)}}).catch(()=>{})},600000);
