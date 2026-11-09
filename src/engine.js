@@ -85,7 +85,45 @@ main.innerHTML=`<div><div class="hero"><span class="tag" style="background:#ffff
 bindQuiz(qs,"f"+m,need,ok=>{att(k);st.scores[k]=Math.max(ok,st.scores[k]||0);if(ok>=need)st.done[k]=1;save();renderNav({m,p:"final"});progress()});
 $("#prev").onclick=()=>go({m,p:MODS[m].L.length-1});$("#next").onclick=()=>go(m<MODS.length-1?{m:m+1,p:0}:{p:"exam"});}
 
-function exam(){const pool=shuffle(MODS.flatMap(M=>M.L.flatMap(l=>l.q)));const n=Math.min(EXAMN,pool.length),need=Math.ceil(n*.7);
+let REVSIG=false;
+// Firma previa al examen final: entrega de información (art. 18 LPRL) y consentimiento/renuncia a la vigilancia de la salud (art. 22 LPRL)
+function firma(){const hoy=new Date().toLocaleDateString("es-ES");
+main.innerHTML=`<div><div class="hero"><span class="tag" style="background:#ffffff22;color:#fff;border-color:#ffffff55">Antes del examen final</span><h2>✍️ Entrega de información y revisión médica</h2><p>Antes de hacer el examen final, firma la recepción de la información de tu puesto y elige si quieres hacer la revisión médica. Solo se firma una vez.</p></div>
+<form class="card af sigf" id="sgf" novalidate>
+<h3>1. Entrega de información (art. 18 LPRL)</h3>
+<p>Yo, <b>${esc(U.name)}</b>, con DNI/NIE <b>${esc(U.dni)}</b>, de la empresa <b>${esc(U.company)}</b>, puesto de trabajo <b>Personal de oficinas</b>, reconozco haber recibido la información de los riesgos específicos que afectan a mi puesto de trabajo o función y de las medidas de protección y prevención aplicables a los mismos, según establece el artículo 18 de la Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales. La información entregada es el contenido de este curso.</p>
+<div class="sgg"><label>Centro de trabajo (oficina y dirección) *<input id="sgc" maxlength="120" required placeholder="Ej.: Oficina de Barcelona, C/ …"></label><label>Localidad *<input id="sgl" maxlength="80" required placeholder="Ej.: Barcelona"></label></div>
+<label class="chk"><input type="checkbox" id="sgi"> Declaro que he recibido la información de los riesgos de mi puesto y de sus medidas preventivas *</label>
+<h3>2. Reconocimientos médicos (art. 22 LPRL)</h3>
+<p>De acuerdo con los artículos 196 y 197 de la Ley General de la Seguridad Social y el artículo 22 de la Ley de Prevención de Riesgos Laborales, la empresa tiene el deber de vigilar periódicamente el estado de salud de sus trabajadores y solicita tu consentimiento para realizar los reconocimientos médicos que con carácter general se hacen a todos los trabajadores de la empresa, así como los específicos que, por las características de tu trabajo o la reglamentación vigente, indique la evaluación de riesgos.</p>
+<p>Los resultados de los reconocimientos son <b>confidenciales</b>: el personal sanitario no puede transmitir a la empresa ni a terceros el resultado del control sanitario salvo que lo autorices expresamente (art. 22.3 y 22.4 LPRL). A la empresa solo le consta tu <b>aptitud</b> para el puesto.</p>
+<div class="sgr"><label class="chk"><input type="radio" name="sgm" value="1"> <b>Autorizo</b> la realización de los reconocimientos médicos indicados</label><label class="chk"><input type="radio" name="sgm" value="0"> <b>No autorizo</b> la realización de los reconocimientos médicos indicados</label></div>
+<h3>3. Tu firma</h3>
+<p style="font-size:.9rem;color:var(--mut)">Firma dentro del recuadro con el dedo, el lápiz o el ratón. Fecha: ${hoy}.</p>
+<div class="sigbox"><canvas id="sgcv" aria-label="Recuadro para firmar"></canvas><span class="sigph" id="sgph">Firma aquí</span></div>
+<p><button type="button" id="sgclr">🧽 Borrar firma</button></p>
+<p class="err" id="sgerr" role="alert"></p>
+<button class="go" type="submit">Firmar y continuar al examen ▶</button></form>
+<div class="pn"><button id="prev">◀ Portada</button></div></div>`;
+$("#prev").onclick=()=>go({p:"home"});
+const cv=$("#sgcv"),cx=cv.getContext("2d");let drawn=false,dn=false,lp=null;
+const fit=()=>{const r=cv.getBoundingClientRect(),d=Math.max(1,devicePixelRatio||1);cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);cx.setTransform(d,0,0,d,0,0);cx.lineWidth=2.4;cx.lineCap="round";cx.lineJoin="round";cx.strokeStyle="#0b2a4a";drawn=false;$("#sgph").hidden=false};
+fit();addEventListener("resize",()=>{if(!drawn&&document.body.contains(cv))fit()});
+const pt=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+cv.onpointerdown=e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);dn=true;lp=pt(e);cx.beginPath();cx.arc(lp[0],lp[1],1.1,0,7);cx.fill();drawn=true;$("#sgph").hidden=true};
+cv.onpointermove=e=>{if(!dn)return;e.preventDefault();const p=pt(e);cx.beginPath();cx.moveTo(lp[0],lp[1]);cx.lineTo(p[0],p[1]);cx.stroke();lp=p};
+cv.onpointerup=cv.onpointercancel=()=>{dn=false};
+$("#sgclr").onclick=()=>{cx.clearRect(0,0,cv.width,cv.height);fit()};
+$("#sgf").onsubmit=async ev=>{ev.preventDefault();const er=$("#sgerr"),c=$("#sgc").value.trim(),l=$("#sgl").value.trim(),mr=main.querySelector("input[name=sgm]:checked");const bad=[];
+if(c.length<3)bad.push("centro de trabajo");if(l.length<2)bad.push("localidad");if(!$("#sgi").checked)bad.push("confirmar que has recibido la información");if(!mr)bad.push("elegir si autorizas o no la revisión médica");if(!drawn)bad.push("tu firma en el recuadro");
+if(bad.length){er.textContent="Falta: "+bad.join(", ")+".";return}
+const o=document.createElement("canvas");o.width=600;o.height=Math.round(600*cv.height/cv.width);const ox=o.getContext("2d");ox.fillStyle="#fff";ox.fillRect(0,0,o.width,o.height);ox.drawImage(cv,0,0,o.width,o.height);const sig=o.toDataURL("image/png");
+if(REV){REVSIG=true;exam();return}
+const b=ev.target.querySelector("button[type=submit]");b.disabled=true;er.textContent="Guardando la firma…";
+try{const r=await api("/api/firma",{method:"POST",body:JSON.stringify({info:true,medical:mr.value==="1",centro:c,localidad:l,signature:sig})});
+if(r.status===401){expired();return}if(!r.ok){er.textContent=r.j.error||"No se pudo guardar la firma.";b.disabled=false;return}
+U={...U,firma:r.j.firma};LS.set(SK,{token:TOKEN,user:U});exam()}catch(e){er.textContent="No hay conexión con el servidor. La firma necesita conexión a internet; inténtalo de nuevo.";b.disabled=false}}}
+function exam(){if(REV?!REVSIG:!(U&&U.firma)){firma();return}const pool=shuffle(MODS.flatMap(M=>M.L.flatMap(l=>l.q)));const n=Math.min(EXAMN,pool.length),need=Math.ceil(n*.7);
 const qs=pool.slice(0,n).map(q=>{const o=shuffle(q[1].map((t,j)=>({t,c:j===q[2]})));return[q[0],o.map(x=>x.t),o.findIndex(x=>x.c)]});
 main.innerHTML=`<div><div class="hero"><span class="tag" style="background:#ffffff22;color:#fff;border-color:#ffffff55">Evaluación final del curso</span><h2>🎓 Examen final</h2><p>${n} preguntas al azar de un banco de ${pool.length}, de todas las lecciones. Necesitas ${need} aciertos (70 %) para superar el curso (APTO). ${st.exam?"Mejor nota: "+st.exam.ok+"/"+st.exam.n:""}</p></div><div class="card">${quizHTML(qs,"ex")}</div><div class="pn"><button id="prev">◀ Portada</button><button class="btn" id="next">👤 Mi cuenta ▶</button></div></div>`;
 bindQuiz(qs,"ex",need,ok=>{att("exam");const pass=ok>=need,d=new Date().toISOString().slice(0,10);if(!st.exam||ok>st.exam.ok||(pass&&!st.exam.pass))st.exam={ok,n,pass:pass||(st.exam&&st.exam.pass)||false,date:pass?d:(st.exam&&st.exam.date)||d};if(pass)st.done.exam=1;save();renderNav({p:"exam"});progress()});
