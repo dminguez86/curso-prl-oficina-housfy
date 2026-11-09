@@ -52,23 +52,7 @@ function go(v){if(!U){auth();return}const vk=vkey(v);if(vk&&locked(vk)){lockView
 if(v.p==="home")home();else if(v.p==="exam")exam();else if(v.p==="account")account();else if(v.p==="final")finalTest(v.m);else lesson(v.m,v.p);main.firstElementChild.classList.add("view");scrollTo({top:0,behavior:"smooth"});}
 function lockView(k){nav.classList.remove("open");renderNav(curV);progress();const nx=nextStep();main.innerHTML=`<div class="view"><div class="card alert lockv" role="alert"><h2>🔒 Contenido bloqueado</h2><p>${esc(lockMsg(k))}</p><p>El curso se realiza en orden: cada lección se abre al aprobar el test de la anterior (70 % de aciertos), el test final de cada lección al aprobar todos sus apartados, la siguiente lección al aprobar el test final de la anterior y el examen final al aprobarlo todo.</p><button class="btn" id="gonx">Ir a lo pendiente ▶</button></div></div>`;$("#gonx").onclick=()=>go(parse(nx));scrollTo({top:0,behavior:"smooth"})}
 function nextStep(){for(let m=0;m<MODS.length;m++){const i=MODS[m].L.findIndex((_,j)=>!st.done[m+"-"+j]);if(i>=0)return m+"-"+i;if(!st.done[m+"-final"])return m+"-final"}return "exam"}
-const RACK=`<svg class="ofc" viewBox="0 0 320 270" role="img" aria-label="Persona de oficina trabajando sentada con buena postura frente al ordenador">
-<rect x="0" y="246" width="320" height="6" fill="#ffffff40"/>
-<g class="plant"><rect x="22" y="150" width="26" height="24" rx="4" fill="#f28c28"/><path d="M35 150 C30 128 18 124 14 112 C28 116 34 130 35 150 M35 150 C38 126 50 118 58 108 C56 126 44 136 35 150 M35 150 C34 132 36 120 34 104" fill="none" stroke="#16B14C" stroke-width="6" stroke-linecap="round"/></g>
-<rect x="10" y="174" width="210" height="10" rx="3" fill="#cfe0ee"/><rect x="20" y="184" width="8" height="62" fill="#9fb8cc"/><rect x="200" y="184" width="8" height="62" fill="#9fb8cc"/>
-<g class="docs"><path d="M64 172 L74 132 L100 132 L92 172z" fill="#ffffff"/><g stroke="#9fb8cc" stroke-width="2"><path d="M76 142 H96 M74 150 H94 M72 158 H92"/></g></g>
-<rect x="112" y="160" width="10" height="14" fill="#0b3a55"/><rect x="100" y="170" width="34" height="5" rx="2" fill="#0b3a55"/>
-<rect x="84" y="96" width="66" height="66" rx="6" fill="#0b3a55"/><rect class="scr" x="90" y="102" width="54" height="52" rx="3" fill="#009CD7"/>
-<g class="lines" stroke="#ffffffcc" stroke-width="3" stroke-linecap="round"><path d="M96 112 H132 M96 121 H124 M96 130 H136"/></g><rect class="cur" x="96" y="137" width="10" height="4" fill="#9ff0bb"/>
-<rect x="138" y="168" width="40" height="6" rx="2" fill="#ffffff"/><ellipse class="mouse" cx="190" cy="170" rx="6" ry="4" fill="#ffffff"/>
-<g class="chair"><rect x="246" y="118" width="12" height="76" rx="6" fill="#0b3a55"/><rect x="204" y="190" width="58" height="10" rx="5" fill="#0b3a55"/><rect x="230" y="200" width="6" height="34" fill="#0b3a55"/><path d="M206 244 L233 234 L260 244" fill="none" stroke="#0b3a55" stroke-width="6" stroke-linecap="round"/><circle cx="206" cy="246" r="4" fill="#0b3a55"/><circle cx="260" cy="246" r="4" fill="#0b3a55"/></g>
-<rect x="236" y="120" width="34" height="62" rx="14" fill="#16B14C"/>
-<circle cx="250" cy="100" r="15" fill="#ffd9b0"/><path d="M236 96 C236 80 264 80 265 96 C258 90 244 90 236 96z" fill="#0b3a55"/>
-<g stroke="#0b3a55" stroke-width="12" stroke-linecap="round" fill="none"><path d="M244 186 H200 V242"/></g><path d="M190 242 H210" stroke="#0b3a55" stroke-width="8" stroke-linecap="round"/>
-<g stroke="#ffd9b0" stroke-width="9" stroke-linecap="round" fill="none"><path class="arm" d="M246 136 L230 162 L186 166"/></g>
-<g stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4" opacity=".75" fill="none"><path d="M236 100 L146 112"/></g>
-<g font-size="11" font-weight="800" text-anchor="middle"><rect x="240" y="20" width="66" height="20" rx="5" fill="#16B14C"/><text x="273" y="34" fill="#fff">PRL ✔</text></g>
-</svg>`;
+const RACK=`<img class="ofc himg zoom" src="assets/portada.webp" data-hd="assets/portada-hd.webp" alt="Equipo de oficina del sector inmobiliario trabajando en un espacio luminoso y ordenado" width="1024" height="576" role="button" tabindex="0" title="Pulsa para ampliar">`;
 function heroX(){const nL=MODS.reduce((a,M)=>a+M.L.length,0),nQ=MODS.reduce((a,M)=>a+M.L.reduce((b,l)=>b+l.q.length,0),0);
 const ks=allKeys(),dn=ks.filter(k=>st.done[k]).length,pc=Math.round(dn/ks.length*100),nx=nextStep();
 const mc=MODS.map((M,m)=>`<div class="mc lc" data-v="${nx.startsWith(m+"-")?nx:m+"-0"}"><span class="n" aria-hidden="true">${String(m).padStart(2,"0")}</span><span class="tag">Lección ${m}</span><h3>${M.t}</h3><p>${M.L.length} lecciones · ${hm(mins(m))}</p><div class="mp"><i style="width:${modPct(m)}%"></i></div></div>`).join("");
