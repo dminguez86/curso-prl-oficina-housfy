@@ -451,7 +451,7 @@ q:[["El teléfono de emergencias es:",["112","010","091 únicamente","No existe"
 
 const MODS=[M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12];
 
-window.__COURSE_BUILD__="20261109072127";
+window.__COURSE_BUILD__="20261113204220";
 const EMPRESAS=["FINQUES FELIU, S.L.", "HOUSFY REAL ESTATE, S.L.", "HRE PROPERTY MGMT IBERIA, S.L.", "HRE GESTIO DE FINQUES, S.L.", "HIBO TECH SERVICES, S.L.", "UNIÓ CATALANA D'ADMINISTRADORS, S.L.", "FINQUES MARTINEZ, S.L.", "DESPATX OLIVARES, S.L.", "HOUSFY SERVICES, S.L.", "HRE PM GIRONA, S.L.", "SERRA EXPERIÈNCIA IMMOBILIÀRIA, S.L.U."];
 (function(){try{const B=window.__COURSE_BUILD__,k="prl_ofi_build";const o=localStorage.getItem(k);localStorage.setItem(k,B);if(o&&o!==B&&!sessionStorage.getItem("rl_"+B)){sessionStorage.setItem("rl_"+B,"1");location.reload()}}catch(e){}})();
 setInterval(()=>{fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{const m=t.match(/__COURSE_BUILD__="([^"]+)"/);if(m&&m[1]!==window.__COURSE_BUILD__&&!sessionStorage.getItem("rl_"+m[1])){try{tick(2)}catch(e){}sessionStorage.setItem("rl_"+m[1],"1");localStorage.setItem("prl_ofi_build",m[1]);setTimeout(()=>location.reload(),400)}}).catch(()=>{})},600000);
@@ -617,7 +617,7 @@ ${mode==="signup"?`<form class="card af" id="fs" novalidate><h3>Alta de la perso
 <label>Nombre y apellidos *<input id="fn" autocomplete="name" maxlength="80" required></label>
 <label>DNI / NIE *<input id="fd" maxlength="12" placeholder="12345678Z o X1234567L" autocapitalize="characters" required></label>
 <label>Empresa *<select id="fe" required><option value="">Selecciona tu empresa…</option>${EMPRESAS.map(e=>`<option>${esc(e)}</option>`).join("")}</select></label>
-<label>Correo electrónico *<input id="fm" type="email" autocomplete="email" maxlength="100" required></label>
+<label>Correo electrónico corporativo *<input id="fm" type="email" autocomplete="email" maxlength="100" placeholder="tu correo de la empresa (no uno personal)" required><small style="display:block;font-weight:400;opacity:.8;margin-top:3px">Usa obligatoriamente tu correo de empresa, no uno personal.</small></label>
 <label>PIN o contraseña * <small>(mínimo 4 caracteres)</small><input id="fp" type="password" autocomplete="new-password" maxlength="40" minlength="4" required></label>
 <label>Repite el PIN *<input id="fp2" type="password" autocomplete="new-password" maxlength="40" required></label>
 <div class="note rgpd"><b>Protección de datos.</b> Tus datos (nombre, DNI/NIE, empresa y correo) se usarán únicamente para identificarte en este curso, registrar tu progreso y tus resultados y acreditar tu formación en prevención de riesgos laborales (art. 19 Ley 31/1995). Se guardan en el servidor del curso (base de datos con acceso restringido; el PIN se almacena cifrado) y una copia de tu progreso en este navegador. Tu empresa y su servicio de prevención pueden consultar tu progreso y tus resultados para acreditar la formación. Puedes descargar o eliminar tus datos desde «Mi cuenta». El responsable del tratamiento es tu empresa, ante la que puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad.</div>
@@ -630,7 +630,7 @@ ${mode==="signup"?`<form class="card af" id="fs" novalidate><h3>Alta de la perso
 $("#tsign").onclick=()=>auth("signup");$("#tlog").onclick=()=>auth("login");
 const busy=(f,on)=>{const b=f.querySelector("button[type=submit]");b.disabled=on};
 if(mode==="signup")$("#fs").onsubmit=async ev=>{ev.preventDefault();const f=ev.target,n=$("#fn").value.trim().replace(/\s+/g," "),d=normDni($("#fd").value),c=$("#fe").value.trim(),m=$("#fm").value.trim(),p=$("#fp").value,er=$("#ferr");
-const bad=[];if(n.length<5||!/\s/.test(n))bad.push("nombre y apellidos");if(!validDni(d))bad.push("DNI/NIE válido (comprueba la letra)");if(!EMPRESAS.includes(c))bad.push("empresa (elígela de la lista)");if(!validMail(m))bad.push("correo válido");if(p.length<4)bad.push("PIN de al menos 4 caracteres");else if(p!==$("#fp2").value)bad.push("los dos PIN deben coincidir");if(!$("#fc").checked)bad.push("aceptar la información de protección de datos");
+const bad=[];if(n.length<5||!/\s/.test(n))bad.push("nombre y apellidos");if(!validDni(d))bad.push("DNI/NIE válido (comprueba la letra)");if(!EMPRESAS.includes(c))bad.push("empresa (elígela de la lista)");if(!validMail(m))bad.push("correo corporativo válido");if(p.length<4)bad.push("PIN de al menos 4 caracteres");else if(p!==$("#fp2").value)bad.push("los dos PIN deben coincidir");if(!$("#fc").checked)bad.push("aceptar la información de protección de datos");
 if(bad.length){er.textContent="Revisa: "+bad.join(", ")+".";return}
 const anon=LS.get(KEY,null),old=LS.get(KEY+":"+d,null),prog=old||anon||{};
 busy(f,true);er.textContent=WAKE;try{const r=await api("/api/register",{method:"POST",body:JSON.stringify({name:n,dni:d,company:c,email:m,pin:p,consent:true,course:"ofi",progress:prog})});
